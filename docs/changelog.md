@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.12.2
+
+This patch release excludes "dogears" from being erroneously counted as highlights, which can cause confusion when a subset of highlights are considered to not have synced (as they aren't really highlights).
+
+## v1.12.1
+
+This release is exactly the same as v1.12.0 (technically v1.11.0...) but with a fixed Windows release.
+
+A number of changes were required to fix up Windows codesigning (due to certificate provider changes) so please file a Github Issue if you run into any Windows Smartscreen issues.
+
 ## v1.12.0
 
 This patch release finally fixes a series of build issues that prevented the v1.11.x series of patches from having build artifacts.
