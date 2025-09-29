@@ -126,17 +126,19 @@ jobs:
           cd "C:\Runner\"
           Expand-Archive -Path CodeSignTool.zip
           Get-ChildItem -Force -Path "C:\Runner\CodeSignTool"
+      
+      - name: Ensure System32 is in PATH for Scoop
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          echo "C:\Windows\System32" >> $GITHUB_PATH
     
       - uses: MinoruSekine/setup-scoop@v4.0.2
+        if: runner.os == 'Windows'
         with:
           buckets: extras
           apps: nsis
-
-      - name: Install Windows dependencies
-        if: runner.os == 'Windows'
-        uses: crazy-max/ghaction-chocolatey@v3
-        with:
-          args: install nsis
+          update_path: 'true'
     
       # Build -- frontend
 
