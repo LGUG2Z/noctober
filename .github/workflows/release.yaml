@@ -111,7 +111,6 @@ jobs:
           p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
 
       ## Windows
-
       - name: Setup Java for CodeSignTool
         if: runner.os == 'Windows'
         uses: actions/setup-java@v3
@@ -127,6 +126,11 @@ jobs:
           cd "C:\Runner\"
           Expand-Archive -Path CodeSignTool.zip
           Get-ChildItem -Force -Path "C:\Runner\CodeSignTool"
+    
+      - uses: MinoruSekine/setup-scoop@v4.0.2
+        with:
+          buckets: extras
+          apps: nsis
 
       - name: Install Windows dependencies
         if: runner.os == 'Windows'
