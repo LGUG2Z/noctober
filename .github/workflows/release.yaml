@@ -137,7 +137,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: bash
         run: |
-          echo "C:\ProgramData\chocolatey\bin" >> $GITHUB_PATH
+          echo "C:\Program Files (x86)\NSIS\Bin" >> $GITHUB_PATH
     
       # Build -- frontend
 
