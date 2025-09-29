@@ -260,14 +260,14 @@ func (k *Kobo) CountDeviceBookmarks(logger *slog.Logger) HighlightCounts {
 	var totalCount int64
 	var officialCount int64
 	var sideloadedCount int64
-	result := Conn.Model(&Bookmark{}).Count(&totalCount)
+	result := Conn.Model(&Bookmark{}).Where("Type != 'dogear'").Count(&totalCount)
 	if result.Error != nil {
 		logger.Error("Failed to count bookmarks on device",
 			slog.String("error", result.Error.Error()),
 		)
 	}
-	Conn.Model(&Bookmark{}).Where("VolumeID LIKE '%file:///%'").Count(&sideloadedCount)
-	Conn.Model(&Bookmark{}).Where("VolumeID NOT LIKE '%file:///%'").Count(&officialCount)
+	Conn.Model(&Bookmark{}).Where("VolumeID LIKE '%file:///%' AND Type != 'dogear'").Count(&sideloadedCount)
+	Conn.Model(&Bookmark{}).Where("VolumeID NOT LIKE '%file:///%' AND Type != 'dogear'").Count(&officialCount)
 	return HighlightCounts{
 		Total:      totalCount,
 		Official:   officialCount,
