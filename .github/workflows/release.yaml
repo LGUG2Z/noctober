@@ -111,7 +111,6 @@ jobs:
           p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
 
       ## Windows
-
       - name: Setup Java for CodeSignTool
         if: runner.os == 'Windows'
         uses: actions/setup-java@v3
@@ -133,6 +132,12 @@ jobs:
         uses: crazy-max/ghaction-chocolatey@v3
         with:
           args: install nsis
+      
+      - name: Add Chocolatey bin location to PATH
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          echo "C:\Program Files (x86)\NSIS\Bin" >> $GITHUB_PATH
     
       # Build -- frontend
 

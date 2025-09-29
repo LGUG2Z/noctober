@@ -417,3 +417,20 @@ export namespace backend {
 
 }
 
+export namespace slog {
+	
+	export class Logger {
+	
+	
+	    static createFrom(source: any = {}) {
+	        return new Logger(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	
+	    }
+	}
+
+}
+
