@@ -10,8 +10,8 @@ export function FormatSystemDetails() {
   return window['go']['backend']['Backend']['FormatSystemDetails']();
 }
 
-export function ForwardToReadwise() {
-  return window['go']['backend']['Backend']['ForwardToReadwise']();
+export function ForwardToNotado() {
+  return window['go']['backend']['Backend']['ForwardToNotado']();
 }
 
 export function GetBookmark() {

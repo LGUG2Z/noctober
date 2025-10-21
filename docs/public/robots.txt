@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://october.utf9k.net/sitemap.xml

@@ -2,16 +2,11 @@ package backend
 
 import (
 	"context"
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"log/slog"
-	"net/http"
-	"os"
 	"os/exec"
-	"path"
 	"runtime"
-	"strings"
 
 	"github.com/pgaskin/koboutils/v2/kobo"
 
@@ -23,7 +18,7 @@ type Backend struct {
 	ConnectedKobos map[string]Kobo
 	RuntimeContext *context.Context
 	Settings       *Settings
-	Readwise       *Readwise
+	Notado         *Notado
 	Kobo           *Kobo
 	Content        *Content
 	Bookmark       *Bookmark
@@ -37,7 +32,6 @@ func StartBackend(ctx *context.Context, version string, portable bool, logger *s
 	logger.Info("Successfully parsed settings file",
 		slog.String("path", settings.path),
 		slog.Bool("upload_store_highlights", settings.UploadStoreHighlights),
-		slog.Bool("upload_covers", settings.UploadCovers),
 	)
 	if err != nil {
 		logger.Error("Failed to load settings",
@@ -50,7 +44,7 @@ func StartBackend(ctx *context.Context, version string, portable bool, logger *s
 		ConnectedKobos: map[string]Kobo{},
 		RuntimeContext: ctx,
 		Settings:       settings,
-		Readwise: &Readwise{
+		Notado: &Notado{
 			logger:    logger,
 			UserAgent: fmt.Sprintf(UserAgentFmt, version),
 		},
@@ -81,7 +75,7 @@ func (b *Backend) GetPlainSystemDetails() string {
 
 func (b *Backend) FormatSystemDetails() string {
 	onboardingComplete := false
-	if b.Settings.ReadwiseToken != "" {
+	if b.Settings.NotadoToken != "" {
 		onboardingComplete = true
 	}
 	return fmt.Sprintf("<details><summary>System Details</summary><ul><li>Version: %s</li><li>Platform: %s</li><li>Architecture: %s</li><li>Onboarding Complete: %t</li></details>", b.version, runtime.GOOS, runtime.GOARCH, onboardingComplete)
@@ -189,7 +183,7 @@ func (b *Backend) PromptForLocalDBPath() error {
 	return b.SelectKobo(selectedFile)
 }
 
-func (b *Backend) ForwardToReadwise() (int, error) {
+func (b *Backend) ForwardToNotado() (int, error) {
 	highlightBreakdown := b.Kobo.CountDeviceBookmarks(b.logger)
 	slog.Info("Got highlight counts from device",
 		slog.Int("highlight_count_sideload", int(highlightBreakdown.Sideloaded)),
@@ -222,74 +216,21 @@ func (b *Backend) ForwardToReadwise() (int, error) {
 	}
 	payload, err := BuildPayload(bookmarks, contentIndex, b.logger)
 	if err != nil {
-		slog.Error("Received an error trying to build Readwise payload",
+		slog.Error("Received an error trying to build Notado payload",
 			slog.String("error", err.Error()),
 		)
 		return 0, err
 	}
-	numUploads, err := b.Readwise.SendBookmarks(payload, b.Settings.ReadwiseToken)
+	numUploads, err := b.Notado.SendBookmarks(payload, b.Settings.NotadoToken)
 	if err != nil {
-		slog.Error("Received an error trying to send bookmarks to Readwise",
+		slog.Error("Received an error trying to send bookmarks to Notado",
 			slog.String("error", err.Error()),
 		)
 		return 0, err
 	}
-	slog.Info("Successfully uploaded bookmarks to Readwise",
+	slog.Info("Successfully uploaded bookmarks to Notado",
 		slog.Int("payload_count", numUploads),
 	)
-	if b.Settings.UploadCovers {
-		uploadedBooks, err := b.Readwise.RetrieveUploadedBooks(b.Settings.ReadwiseToken)
-		if err != nil {
-			slog.Error("Failed to retrieve uploaded titles from Readwise",
-				slog.String("error", err.Error()),
-			)
-			return numUploads, fmt.Errorf("Successfully uploaded %d bookmarks", numUploads)
-		}
-		slog.Info("Retrieved uploaded books from Readwise for cover insertion",
-			slog.Int("book_count", uploadedBooks.Count),
-		)
-		for _, book := range uploadedBooks.Results {
-			slog.Info("Checking cover status for book",
-				slog.Int("book_id", book.ID),
-				slog.String("book_title", book.Title),
-			)
-			// We don't want to overwrite user uploaded covers or covers already present
-			if !strings.Contains(book.CoverURL, "uploaded_book_covers") {
-				coverID := kobo.ContentIDToImageID(book.SourceURL)
-				coverPath := kobo.CoverTypeLibFull.GeneratePath(false, coverID)
-				absCoverPath := path.Join(b.SelectedKobo.MntPath, "/", coverPath)
-				coverBytes, err := os.ReadFile(absCoverPath)
-				if err != nil {
-					slog.Warn("Failed to load cover from disc. Skipping to next book.",
-						slog.String("error", err.Error()),
-						slog.String("cover_path", absCoverPath),
-						slog.String("cover_id", book.SourceURL),
-					)
-					continue
-				}
-				var base64Encoding string
-				mimeType := http.DetectContentType(coverBytes)
-				switch mimeType {
-				case "image/jpeg":
-					base64Encoding += "data:image/jpeg;base64,"
-				case "image/png":
-					base64Encoding += "data:image/png;base64,"
-				}
-				base64Encoding += base64.StdEncoding.EncodeToString(coverBytes)
-				err = b.Readwise.UploadCover(base64Encoding, book.ID, b.Settings.ReadwiseToken)
-				if err != nil {
-					slog.Error("Failed to upload cover to Readwise. Skipping to next book.",
-						slog.String("error", err.Error()),
-						slog.String("cover_url", book.SourceURL),
-					)
-					continue
-				}
-				slog.Debug("Successfully uploaded cover to Readwise",
-					slog.String("cover_url", book.SourceURL),
-				)
-			}
-			slog.Info("Cover already exists for book. Skipping as we don't know if this was us prior or a user upload.")
-		}
-	}
+
 	return numUploads, nil
 }

@@ -6,10 +6,6 @@ export function Save() {
   return window['go']['backend']['Settings']['Save']();
 }
 
-export function SaveCoverUploading(arg1) {
-  return window['go']['backend']['Settings']['SaveCoverUploading'](arg1);
-}
-
 export function SaveStoreHighlights(arg1) {
   return window['go']['backend']['Settings']['SaveStoreHighlights'](arg1);
 }

@@ -1,71 +1,71 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import Navbar from "../components/Navbar"
-import logo from '../logo.png'
-import {BrowserOpenURL} from "../../wailsjs/runtime";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import logo from "../logo.png";
+import { BrowserOpenURL } from "../../wailsjs/runtime";
 import {
   FormatSystemDetails,
   GetPlainSystemDetails,
   GetSettings,
-  NavigateExplorerToLogLocation
+  NavigateExplorerToLogLocation,
 } from "../../wailsjs/go/backend/Backend";
-import {SaveCoverUploading, SaveStoreHighlights, SaveToken} from "../../wailsjs/go/backend/Settings";
-import {toast} from "react-hot-toast";
-import {CheckTokenValidity} from "../../wailsjs/go/backend/Readwise";
+import {
+  SaveStoreHighlights,
+  SaveToken,
+} from "../../wailsjs/go/backend/Settings";
+import { toast } from "react-hot-toast";
 
 export default function Onboarding() {
   const [loaded, setLoadState] = useState(false);
-  const [onboardingComplete, setOnboardingComplete] = useState(false)
-  const [token, setToken] = useState("")
+  const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const [token, setToken] = useState("");
   const [coversUploading, setCoversUploading] = useState(false);
   const [storeHighlights, setStoreHighlights] = useState(false); // default on as users run into this issue more than not but give ample warning
   const [tokenInput, setTokenInput] = useState("");
   const [systemDetails, setSystemDetails] = useState(
-    "Fetching system details..."
+    "Fetching system details...",
   );
 
   useEffect(() => {
     GetSettings().then((settings) => {
       setLoadState(true);
-      if (settings.readwise_token !== "") {
-        setOnboardingComplete(true)
+      if (settings.notado_token !== "") {
+        setOnboardingComplete(true);
       }
-      setToken(settings.readwise_token);
-      setTokenInput(settings.readwise_token);
-      setCoversUploading(settings.upload_covers);
-      setStoreHighlights(settings.upload_store_highlights)
+      setToken(settings.notado_token);
+      setTokenInput(settings.notado_token);
+      setStoreHighlights(settings.upload_store_highlights);
     });
     GetPlainSystemDetails().then((details) => setSystemDetails(details));
   }, [loaded]);
 
   function saveAllSettings() {
     if (tokenInput === "") {
-      toast.error("Please enter your Readwise token")
-      return
+      toast.error("Please enter your Notado token");
+      return;
     }
     SaveToken(tokenInput);
-    SaveCoverUploading(coversUploading);
     SaveStoreHighlights(storeHighlights);
-    navigate("/selector")
+    navigate("/selector");
   }
 
   function checkTokenValid() {
     toast.promise(CheckTokenValidity(tokenInput), {
-      loading: "Contacting Readwise...",
+      loading: "Contacting Notado...",
       success: () => "Your API token is valid!",
       error: (err) => {
         if (err === "401 Unauthorized") {
-          return "Readwise rejected your token";
+          return "Notado rejected your token";
         }
         return err;
       },
     });
   }
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   if (onboardingComplete) {
-    navigate("/selector")
+    navigate("/selector");
   }
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-800 flex flex-col">
@@ -78,7 +78,7 @@ export default function Onboarding() {
             alt="The October logo, which is a cartoon octopus reading a book."
           />
           <h2 className="text-center text-3xl font-extrabold text-gray-900 dark:dark:text-gray-300">
-            First time setup with October
+            First time setup with Noctober
           </h2>
           <p className="mt-0 text-center text-sm text-gray-600 dark:text-gray-400">
             This should only take a minute of your time
@@ -88,7 +88,7 @@ export default function Onboarding() {
           <div className="bg-white dark:bg-slate-700 shadow sm:rounded-lg">
             <div className="px-4 py-5 sm:p-6">
               <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-300">
-                Set your Readwise access token
+                Set your Notado access token
               </h3>
               <div className="mt-2 max-w-xl text-sm text-gray-500 dark:text-gray-400">
                 <p>
@@ -96,10 +96,10 @@ export default function Onboarding() {
                   <button
                     className="text-gray-600 dark:text-gray-400 underline"
                     onClick={() =>
-                      BrowserOpenURL("https://readwise.io/access_token")
+                      BrowserOpenURL("https://notado.app/settings")
                     }
                   >
-                    https://readwise.io/access_token
+                    https://notado.app/settings
                   </button>
                 </p>
               </div>
@@ -118,95 +118,7 @@ export default function Onboarding() {
                     value={tokenInput}
                   />
                 </div>
-                <div className="w-full mt-4 sm:flex flex-row">
-                  <button
-                    onClick={checkTokenValid}
-                    type="submit"
-                    className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:text-sm"
-                  >
-                    Validate
-                  </button>
-                </div>
               </form>
-            </div>
-          </div>
-          <div className="bg-white dark:bg-slate-700 shadow sm:rounded-lg">
-            <div className="shadow overflow-hidden sm:rounded-md">
-              <div className="px-4 py-5 bg-white dark:bg-slate-700 space-y-6 sm:p-6">
-                <fieldset>
-                  <legend className="text-base font-medium text-gray-900 dark:text-gray-300">
-                    Highlight Settings
-                  </legend>
-                  <div className="mt-4 space-y-4">
-                    <div className="flex items-start">
-                      <div className="flex items-center h-5">
-                        <input
-                          // TODO: This probably causes the render method to seize up
-                          onInput={(e) => {
-                            setStoreHighlights(!e.currentTarget.checked)
-                          }}
-                          checked={storeHighlights}
-                          id="storeBought"
-                          name="storeBought"
-                          type="checkbox"
-                          className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                        />
-                      </div>
-                      <div className="ml-3 text-sm">
-                        <label
-                          htmlFor="storeBought"
-                          className="font-medium text-gray-700 dark:text-gray-300"
-                        >
-                          Upload highlights from store-bought books
-                        </label>
-                        <p className="text-red-500 dark:text-red-400">
-                          WARNING: If you are using the{" "}
-                          <button
-                            className="text-gray-600 dark:text-gray-400 underline"
-                            onClick={() =>
-                              BrowserOpenURL(
-                                "https://help.readwise.io/article/135-how-do-i-import-highlights-from-kobo"
-                              )
-                            }
-                          >
-                            official Readwise integration
-                          </button>{" "}
-                          to sync books from the Kobo store, you should <strong>disable</strong> this option or risk having duplicate highlights!
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-4 space-y-4">
-                    <div className="flex items-start">
-                      <div className="flex items-center h-5">
-                        <input
-                          // TODO: This probably causes the render method to seize up
-                          onInput={(e) =>
-                            setCoversUploading(!e.currentTarget.checked)
-                          }
-                          checked={coversUploading}
-                          id="comments"
-                          name="comments"
-                          type="checkbox"
-                          className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                        />
-                      </div>
-                      <div className="ml-3 text-sm">
-                        <label
-                          htmlFor="comments"
-                          className="font-medium text-gray-700 dark:text-gray-300"
-                        >
-                          Upload covers
-                        </label>
-                        <p className="text-gray-500 dark:text-gray-400">
-                          This will slow down the upload process a bit. It also
-                          requires you to have <button className="text-gray-600 dark:text-gray-400 underline" onClick={() => BrowserOpenURL("https://october.utf9k.net/prerequisites#configuring-calibre-to-sync-high-quality-covers")}>configured Calibre</button> to get the most benefit.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </fieldset>
-              </div>
             </div>
           </div>
           <div className="bg-white dark:bg-slate-700 shadow sm:rounded-lg">
@@ -219,21 +131,6 @@ export default function Onboarding() {
                   <div className="space-y-4">
                     <div className="flex items-start">
                       <div className="w-full mt-4 sm:flex flex-row">
-                        <button
-                          onClick={() =>
-                            FormatSystemDetails().then((details) =>
-                              BrowserOpenURL(
-                                `https://github.com/marcus-crane/october/issues/new?body=${encodeURI(
-                                  "I have an issue with...\n\n---\n\n" + details
-                                )}`
-                              )
-                            )
-                          }
-                          type="submit"
-                          className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:text-sm"
-                        >
-                          Having trouble?
-                        </button>
                         <button
                           onClick={saveAllSettings}
                           type="submit"
@@ -251,5 +148,5 @@ export default function Onboarding() {
         </div>
       </div>
     </div>
-  )
+  );
 }

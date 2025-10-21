@@ -56,8 +56,8 @@ github.com/mattn/go-isatty v0.0.20 h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWE
 github.com/mattn/go-isatty v0.0.20/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y=
 github.com/ncruces/go-strftime v0.1.9 h1:bY0MQC28UADQmHmaF5dgpLmImcShSi2kHU9XLdhx/f4=
 github.com/ncruces/go-strftime v0.1.9/go.mod h1:Fwc5htZGVVkseilnfgOVb9mKy6w1naJmn9CehxcKcls=
-github.com/pgaskin/koboutils/v2 v2.2.0 h1:QPZdJqypR70FcI7MwFmo0ytc5aIoNYghYaZcPqiC5yY=
-github.com/pgaskin/koboutils/v2 v2.2.0/go.mod h1:VZgKQWcGI6jHpGKN+RJ34Xm6IZjuY8nauqYLrSfruo4=
+github.com/pgaskin/koboutils/v2 v2.2.1-0.20240526061659-3392decd542a h1:l9T72gdwnCGO4I+yRobrWZ0G/DFL80jojeq3401JtsI=
+github.com/pgaskin/koboutils/v2 v2.2.1-0.20240526061659-3392decd542a/go.mod h1:VZgKQWcGI6jHpGKN+RJ34Xm6IZjuY8nauqYLrSfruo4=
 github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c h1:+mdjkGKdHQG3305AYmdv1U2eRNDiU2ErMBj1gwrq8eQ=
 github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c/go.mod h1:7rwL4CYBLnjLxUqIJNnCWiEdr3bn6IUYi15bNlnbCCU=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=

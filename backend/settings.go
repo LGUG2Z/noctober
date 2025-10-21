@@ -12,8 +12,7 @@ import (
 
 type Settings struct {
 	path                  string `json:"-"`
-	ReadwiseToken         string `json:"readwise_token"`
-	UploadCovers          bool   `json:"upload_covers"`
+	NotadoToken           string `json:"notado_token"`
 	UploadStoreHighlights bool   `json:"upload_store_highlights"`
 }
 
@@ -31,7 +30,6 @@ func LoadSettings(portable bool, logger *slog.Logger) (*Settings, error) {
 	s := &Settings{
 		path:                  settingsPath,
 		UploadStoreHighlights: true, // default on as users with only store purchased books are blocked from usage otherwise but give ample warning during setup
-		UploadCovers:          false,
 	}
 	b, err := os.ReadFile(settingsPath)
 	if err != nil {
@@ -39,7 +37,6 @@ func LoadSettings(portable bool, logger *slog.Logger) (*Settings, error) {
 			logger.Info("Settings file at path does not exist. Reinitialising with default values.",
 				slog.String("path", settingsPath),
 				slog.Bool("upload_store_highlights", s.UploadStoreHighlights),
-				slog.Bool("upload_covers", s.UploadCovers),
 			)
 			// We should always have settings but if they have been deleted, just use the defaults
 			return s, nil
@@ -73,7 +70,6 @@ func LoadSettings(portable bool, logger *slog.Logger) (*Settings, error) {
 		logger.Info("Successfully fixed up corrupted settings file",
 			slog.String("path", settingsPath),
 			slog.Bool("upload_store_highlights", s.UploadStoreHighlights),
-			slog.Bool("upload_covers", s.UploadCovers),
 		)
 		// We managed to fix the settings file so we'll persist it to disc
 		err = s.Save()
@@ -108,12 +104,7 @@ func (s *Settings) Save() error {
 }
 
 func (s *Settings) SaveToken(token string) error {
-	s.ReadwiseToken = token
-	return s.Save()
-}
-
-func (s *Settings) SaveCoverUploading(uploadCovers bool) error {
-	s.UploadCovers = uploadCovers
+	s.NotadoToken = token
 	return s.Save()
 }
 

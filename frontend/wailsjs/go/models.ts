@@ -1,55 +1,5 @@
 export namespace backend {
 	
-	export class BookListEntry {
-	    id: number;
-	    title: string;
-	    cover_image_url: string;
-	    source_url: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new BookListEntry(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.id = source["id"];
-	        this.title = source["title"];
-	        this.cover_image_url = source["cover_image_url"];
-	        this.source_url = source["source_url"];
-	    }
-	}
-	export class BookListResponse {
-	    count: number;
-	    results: BookListEntry[];
-	
-	    static createFrom(source: any = {}) {
-	        return new BookListResponse(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.count = source["count"];
-	        this.results = this.convertValues(source["results"], BookListEntry);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
 	export class Bookmark {
 	    bookmark_id: string;
 	    volume_id: string;
@@ -307,14 +257,12 @@ export namespace backend {
 	    }
 	}
 	export class Highlight {
-	    text: string;
-	    title?: string;
+	    content: string;
+	    url: string;
+	    title: string;
+	    created?: string;
+	    tags?: string[];
 	    author?: string;
-	    source_url: string;
-	    source_type: string;
-	    category: string;
-	    note?: string;
-	    highlighted_at?: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new Highlight(source);
@@ -322,14 +270,12 @@ export namespace backend {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.text = source["text"];
+	        this.content = source["content"];
+	        this.url = source["url"];
 	        this.title = source["title"];
+	        this.created = source["created"];
+	        this.tags = source["tags"];
 	        this.author = source["author"];
-	        this.source_url = source["source_url"];
-	        this.source_type = source["source_type"];
-	        this.category = source["category"];
-	        this.note = source["note"];
-	        this.highlighted_at = source["highlighted_at"];
 	    }
 	}
 	export class HighlightCounts {
@@ -399,8 +345,7 @@ export namespace backend {
 		}
 	}
 	export class Settings {
-	    readwise_token: string;
-	    upload_covers: boolean;
+	    notado_token: string;
 	    upload_store_highlights: boolean;
 	
 	    static createFrom(source: any = {}) {
@@ -409,8 +354,7 @@ export namespace backend {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.readwise_token = source["readwise_token"];
-	        this.upload_covers = source["upload_covers"];
+	        this.notado_token = source["notado_token"];
 	        this.upload_store_highlights = source["upload_store_highlights"];
 	    }
 	}

@@ -21,29 +21,29 @@ func IsCLIInvokedExplicitly(args []string) bool {
 
 func Invoke(isPortable bool, version string, logger *slog.Logger) {
 	app := &cli.App{
-		Name:     "october cli",
-		HelpName: "october cli",
+		Name:     "noctober cli",
+		HelpName: "noctober cli",
 		Version:  version,
 		Authors: []*cli.Author{
 			{
-				Name:  "Marcus Crane",
-				Email: "october@utf9k.net",
+				Name:  "Jeezy",
+				Email: "support@notado.app",
 			},
 		},
-		Usage: "sync your kobo highlights to readwise from your terminal",
+		Usage: "sync your kobo highlights to notado from your terminal",
 		Commands: []*cli.Command{
 			{
 				Name:    "sync",
 				Aliases: []string{"s"},
-				Usage:   "sync kobo highlights to readwise",
+				Usage:   "sync kobo highlights to notado",
 				Action: func(c *cli.Context) error {
 					ctx := context.Background()
 					b, err := backend.StartBackend(&ctx, version, isPortable, logger)
 					if err != nil {
 						return err
 					}
-					if b.Settings.ReadwiseToken == "" {
-						return fmt.Errorf("no readwise token was configured. please set this up using the gui as the cli does not support this yet")
+					if b.Settings.NotadoToken == "" {
+						return fmt.Errorf("no notado token was configured. please set this up using the gui as the cli does not support this yet")
 					}
 					kobos := b.DetectKobos()
 					if len(kobos) == 0 {
@@ -55,11 +55,11 @@ func Invoke(isPortable bool, version string, logger *slog.Logger) {
 					if err := b.SelectKobo(kobos[0].MntPath); err != nil {
 						return fmt.Errorf("an error occurred trying to connect to the kobo at %s", kobos[0].MntPath)
 					}
-					num, err := b.ForwardToReadwise()
+					num, err := b.ForwardToNotado()
 					if err != nil {
 						return err
 					}
-					logger.Info("Successfully synced highlights to Readwise",
+					logger.Info("Successfully synced highlights to Notado",
 						slog.Int("count", num),
 					)
 					return nil

@@ -95,7 +95,7 @@ func main() {
 			backend.Bookmark,
 			backend.Content,
 			backend.Kobo,
-			backend.Readwise,
+			backend.Notado,
 			backend.Settings,
 		},
 		// Windows platform specific options

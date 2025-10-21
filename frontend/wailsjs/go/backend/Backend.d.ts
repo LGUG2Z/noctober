@@ -6,7 +6,7 @@ export function DetectKobos():Promise<Array<backend.Kobo>>;
 
 export function FormatSystemDetails():Promise<string>;
 
-export function ForwardToReadwise():Promise<number>;
+export function ForwardToNotado():Promise<number>;
 
 export function GetBookmark():Promise<backend.Bookmark>;
 

@@ -1,11 +1,11 @@
 module github.com/marcus-crane/october
 
-go 1.22.0
+go 1.24
 
 require (
 	github.com/adrg/xdg v0.5.3
 	github.com/glebarez/sqlite v1.11.0
-	github.com/pgaskin/koboutils/v2 v2.2.0
+	github.com/pgaskin/koboutils/v2 v2.2.1-0.20240526061659-3392decd542a
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.10.0
 	github.com/urfave/cli/v2 v2.27.5
