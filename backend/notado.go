@@ -197,12 +197,20 @@ func BuildPayload(bookmarks []Bookmark, contentIndex map[string]Content, logger 
 	sendhighlight:
 		highlightChunks := splitHighlight(text, MaxHighlightLen)
 		for _, chunk := range highlightChunks {
+			tags := []string{}
+
+			for _, possibleTag := range strings.Split(entry.Annotation, " ") {
+				if strings.HasPrefix(possibleTag, ".") {
+					tags = append(tags, strings.TrimPrefix(possibleTag, "."))
+				}
+			}
+
 			highlight := Highlight{
 				Content: chunk,
 				URL:     entry.VolumeID,
 				Title:   fmt.Sprintf("%s - %s", source.Title, source.Attribution),
 				Created: createdAt,
-				Tags:    []string{},
+				Tags:    tags,
 				Author:  source.Attribution,
 			}
 			currentBatch.Highlights = append(currentBatch.Highlights, highlight)
