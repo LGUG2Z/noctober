@@ -207,7 +207,7 @@ func BuildPayload(bookmarks []Bookmark, contentIndex map[string]Content, logger 
 
 			highlight := Highlight{
 				Content: chunk,
-				URL:     entry.VolumeID,
+				URL:     fmt.Sprintf("calibre://search/_?q=title:%s author:%s", source.Title, source.Attribution),
 				Title:   fmt.Sprintf("%s - %s", source.Title, source.Attribution),
 				Created: createdAt,
 				Tags:    tags,
